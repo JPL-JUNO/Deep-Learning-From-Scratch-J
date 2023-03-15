@@ -101,8 +101,33 @@ $a = c^3$）这一次乘法运算（即没有隐藏层的神经网络）来表�
 
 分类问题中使用的softmax函数表示为：
 \begin{equation}
+    \label{eq3-10}
     y_k=\frac{\exp(a_k)}{\sum\limits_{i=1}^n{\exp(a_i)}}
 \end{equation}
 
 softmax函数的分子是输入信号$a_k$的指数函数，分母是所有输入信号的指数
 函数的和。
+
+\subsection{实现softmax函数时的注意事项}
+\autoref{eq3-10}在计算机的运算
+上有一定的缺陷。这个缺陷就是溢出问题。softmax函数的实现中要进行指
+数函数的运算，但是此时指数函数的值很容易变得非常大。
+
+\begin{equation}
+    \begin{aligned}
+        y_k=\frac{\exp(a_k)}{\sum\limits_{i=1}^n{\exp(a_i)}} & =\frac{C\exp(a_k)}{C\sum\limits_{i=1}^n{\exp(a_i)}}             \\
+                                                             & =\frac{\exp(a_k+\log C)}{\sum\limits_{i=1}^n{\exp(a_i+\log C)}} \\
+                                                             & =\frac{\exp(a_k+C^{'})}{\sum\limits_{i=1}^n{\exp(a_i+C^{'})}}   \\
+    \end{aligned}
+\end{equation}
+
+在进行softmax的指数函数的运算时，加上（或者减去）
+某个常数并不会改变运算的结果。这里的$C^{'}$可以使用任何值，但是为了防
+止溢出，一般会使用输入信号中的最大值。
+\subsection{softmax函数的特征}
+一般而言，神经网络只把输出值最大的神经元所对应的类别作为识别结果。
+并且，即便使用softmax函数，输出值最大的神经元的位置也不会变。因此，
+神经网络在进行分类时，输出层的softmax函数可以省略。在实际的问题中，
+由于指数函数的运算需要一定的计算机运算量，因此输出层的softmax函数
+一般会被省略。
+\subsection{输出层的神经元数量}
