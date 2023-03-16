@@ -14,3 +14,4 @@ dataset/t10k-labels-idx1-ubyte.gz
 dataset/train-images-idx3-ubyte.gz
 dataset/train-labels-idx1-ubyte.gz
 dataset/__pycache__/mnist.cpython-311.pyc
+Notes/Ch04.aux
