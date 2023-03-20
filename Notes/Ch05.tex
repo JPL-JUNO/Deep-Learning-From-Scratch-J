@@ -73,3 +73,50 @@
 如图所示，计算图的反向传播从右到左传播信号。反向传播的计算顺序
 是，先将节点的输入信号乘以节点的局部导数（偏导数），然后再传递给下一
 个节点。比如，反向传播时，“$**2$”节点的输入是$\frac{\partial z}{\partial z}$，将其乘以局部导数$\frac{\partial z}{\partial t}$（因为正向传播时输入是$t$、输出是$z$，所以这个节点的局部导数是$\frac{\partial z}{\partial t}$），然后传递给下一个节点。另外，图5-7中反向传播最开始的信号$\frac{\partial z}{\partial t}$在前面的数学式中没有出现，这是因为$\frac{\partial z}{\partial t}=1$，所以在刚才的式子中被省略了。
+
+\section{反向传播}
+上一节介绍了计算图的反向传播是基于链式法则成立的。本节将以“$+$”
+和“$\times$”等运算为例，介绍反向传播的结构。
+\subsection{加法节点的反向传播}
+考虑加法节点的反向传播。这里以$z = x + y$为对象，观察它的
+反向传播。$z = x + y$的导数可由下式（解析性地）计算出来：
+\begin{equation*}
+    \begin{aligned}
+        \frac{\partial z}{\partial x} & =1 \\
+        \frac{\partial z}{\partial y} & =1 \\
+    \end{aligned}
+\end{equation*}
+
+\autoref{Backpropagation for Adder nodes}, 反向传播将从上游传过来的导数乘以1，然
+后传向下游。也就是说，因为加法节点的反向传播只乘以1，所以输入的值
+会原封不动地流向下一个节点。
+
+\figures{Backpropagation for Adder nodes}
+
+\subsection{乘法节点的反向传播}
+看一下乘法节点的反向传播。这里我们考虑$z = xy$。这个
+式子的导数用下式表示：
+\begin{equation*}
+    \begin{aligned}
+        \frac{\partial z}{\partial x} & =y \\
+        \frac{\partial z}{\partial y} & =x \\
+    \end{aligned}
+\end{equation*}
+乘法的反向传播会将上游的值乘以正向传播时的输入信号的“翻转值”
+后传递给下游。
+\figures{Backpropagation of multiply nodes}
+
+加法的反向传播只是将上游的值传给下游，
+并不需要正向传播的输入信号。但是，乘法的反向传播需要正向传播时的输
+入信号值。因此，\important{实现乘法节点的反向传播时，要保存正向传播的输入信号}。
+
+\figures{Example of backpropagation for buying apples}
+
+\section{简单层的实现}
+我们把要实现
+的计算图的乘法节点称为“乘法层”
+（MulLayer），加法节点称为“加法层”
+（AddLayer）。
+\subsection{乘法层的实现}
+层的实现中有两个共通的方法（接口）forward()和backward()。forward()
+对应正向传播，backward()对应反向传播。
