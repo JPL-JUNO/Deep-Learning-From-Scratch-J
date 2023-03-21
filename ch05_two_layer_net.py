@@ -43,7 +43,9 @@ class TwoLayerNet:
         return accuracy
 
     def numerical_gradient(self, x, t):
-        def loss_W(): return self.loss(x, t)
+        # 必须添加一个虚参数
+        def loss_W(W): return self.loss(x, t)
+
         grads = {}
         grads['W1'] = numerical_gradient(loss_W, self.params['W1'])
         grads['b1'] = numerical_gradient(loss_W, self.params['b1'])
@@ -55,7 +57,8 @@ class TwoLayerNet:
         self.loss(x, t)
         dout = 1
         dout = self.lastLayer.backward(dout)
-        layers = list(self.layer.values())
+        layers = list(self.layers.values())
+        layers.reverse()
         for layer in layers:
             dout = layer.backward(dout)
         grads = {}

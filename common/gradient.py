@@ -9,12 +9,12 @@ def numerical_gradient(f, x):
     while not it.finished:
         idx = it.multi_index
         origin_val = x[idx]
-        x[idx] = float(origin_val)+h
+        x[idx] = float(origin_val) + h
         fxh1 = f(x)
 
-        x[idx] = origin_val-h
+        x[idx] = origin_val - h
         fxh2 = f(x)
-        grad[idx] = (fxh1-fxh2) / (2*h)
+        grad[idx] = (fxh1 - fxh2) / (2 * h)
         x[idx] = origin_val
 
         it.iternext()
