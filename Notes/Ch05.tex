@@ -162,7 +162,16 @@ sigmoid函数由下式表示：
 \begin{equation*}
     y=\frac{1}{1+\exp(-x)}
 \end{equation*}
+\figures{Computational graph of the Sigmoid layer}
 
+另外，$\frac{\partial L}{\partial y}y^2\exp(-x)$可以进一步整理如下：
+\begin{equation*}
+    \begin{aligned}
+        \frac{\partial L}{\partial y}y^2\exp(-x) & =\frac{\partial L}{\partial y}\frac{1}{(1+\exp(-x))^2}\exp(-x)                \\
+                                                 & =\frac{\partial L}{\partial y}\frac{1}{1+\exp(-x)}\frac{\exp(-x)}{1+\exp(-x)} \\
+                                                 & =\frac{\partial L}{\partial y}y(1-y)
+    \end{aligned}
+\end{equation*}
 \section{Affine/Softmax层的实现}
 \subsection{Affine层}
 神经元的加权和可以用 \verb|Y = np.dot(X, W) + B|计算出来。然后，\verb|Y| 经过
@@ -171,3 +180,66 @@ sigmoid函数由下式表示：
     神经网络的正向传播中进行的矩阵的乘积运算在几何学领域被称为“仿
     射变换”\footnote{几何中，仿射变换包括一次线性变换和一次平移，分别对应神经网络的加权和运算与加偏置运算。}。因此，这里将进行仿射变换的处理实现为“Affine层”。
 \end{tcolorbox}
+
+\figures{Computational graph of the Affine layer}
+\autoref{Computational graph of the Affine layer}展示了Affine层的计算图（注意变量是矩阵，各个变量的上方标记了该变量的形状）
+
+以矩阵为对象的反向传播，
+按矩阵的各个元素进行计算时，步骤和以标量为对象的计算图相同。实际写
+一下的话，可以得到下式
+\begin{equation}
+    \begin{aligned}
+        \frac{\partial L}{\partial \bm{X}} & = \frac{\partial L}{\partial \bm{Y}}\bm{W}^T \\
+        \frac{\partial L}{\partial \bm{W}} & = \bm{X}^T\frac{\partial L}{\partial \bm{Y}} \\
+    \end{aligned}
+\end{equation}
+
+\subsection{批版本的Affine层}
+前面介绍的Affine层的输入$\bm{X}$是以单个数据为对象的。现在我们考虑$N$
+个数据一起进行正向传播的情况，也就是批版本的Affine层。
+
+\figures{Computational graph of the batch version of the Affine layer}
+
+\important{正向传播时，偏置会被加到每一个数据（第1个、第2个……）上。因此，
+    反向传播时，各个数据的反向传播的值需要汇总为偏置的元素。}
+
+\subsection{Softmax-with-Loss 层}
+softmax函数会将输入值正规化之后再输出。
+
+考虑到这里也包含作为损失函数的交叉熵误
+差（cross entropy error），所以称为“Softmax-with-Loss层”。Softmax-with-
+Loss层（Softmax函数和交叉熵误差）的计算图如\autoref{Computational graph of the Softmax-with-Loss layer}所示。
+
+\figures{Computational graph of the Softmax-with-Loss layer}
+反向传播的具体的推导参见\autoref{appendix}
+
+\figures{Simple version of the calculation graph of the Softmax-with-Loss layer}
+
+\autoref{Simple version of the calculation graph of the Softmax-with-Loss layer}计算图中，softmax 函数记为 Softmax 层，交叉熵误差记为
+Cross Entropy Error层。这里假设要进行3类分类，从前面的层接收3个输
+入（得分）。如\autoref{Simple version of the calculation graph of the Softmax-with-Loss layer} 所示，Softmax 层将输入$(a1, a2, a3)$正规化，输出$(y_1,y_2, y_3)$。Cross Entropy Error层接收Softmax的输出$(y_1, y_2, y_3)$和训练标签$(t_1,t_2, t_3)$，从这些数据中输出损失$L$。
+
+Softmax层的反向传播得到了
+$(y_1 - t_1, y_2 - t_2, y_3 - t_3)$这样“漂亮”的结果。由于$y_1, y_2, y_3$是Softmax层的
+输出，$(t_1, t_2, t_3)$是监督数据，所以$(y_1 - t_1, y_2 - t_2, y_3 - t_3)$是Softmax层的输
+出和训练标签的差分。神经网络的反向传播会把这个差分表示的误差传递给
+前面的层，这是神经网络学习中的重要性质。
+
+神经网络学习的目的就是通过调整权重参数，使神经网络的输出（Softmax
+的输出）接近训练标签。因此，必须将神经网络的输出与训练标签的误差高
+效地传递给前面的层。刚刚的$(y_1 - t_1, y_2 - t_2, y_3 - t_3)$正是Softmax层的输出
+与训练标签的差，直截了当地表示了当前神经网络的输出与训练标签的误差。
+
+\begin{tcolorbox}[title=\textbf{好的损失函数的意义}]
+    使用交叉熵误差作为 softmax 函数的损失函数后，反向传播得到
+    $(y_1 - t_1, y_2 - t_2, y_3 - t_3)$这样 “漂亮”的结果。实际上，这样“漂亮”
+    的结果并不是偶然的，而是为了得到这样的结果，特意设计了交叉
+    熵误差函数。回归问题中输出层使用“恒等函数”，损失函数使用
+    “平方和误差”，也是出于同样的理由。也就是说，使用“平
+    方和误差”作为“恒等函数”的损失函数，反向传播才能得到$(y_1 - t_1, y_2 - t_2, y_3 - t_3)$这样“漂亮”的结果。
+\end{tcolorbox}
+
+\section{误差反向传播法的实现}
+数值微分虽然实现简单，但是计算要耗费较多的时
+间。和需要花费较多时间的数值微分不同，误差反向传播法可以快速高效地
+计算梯度。

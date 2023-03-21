@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import ndarray
 
 
 def softmax(x):
@@ -26,7 +27,7 @@ def relu(x):
     return np.maximum(0, x)
 
 
-def cross_entropy_error(y, t):
+def cross_entropy_error(y: ndarray, t: ndarray):
     if y.ndim == 1:
         t = t.reshape(1, t.size)
         y = y.reshape(1, y.size)
