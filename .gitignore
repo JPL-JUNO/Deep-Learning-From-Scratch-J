@@ -26,3 +26,5 @@ common/__pycache__/__init__.cpython-311.pyc
 __pycache__/ch05_two_layer_net.cpython-311.pyc
 Notes/Ch06.aux
 common/__pycache__/optimizer.cpython-311.pyc
+common/__pycache__/multi_layer_net.cpython-311.pyc
+common/__pycache__/util.cpython-311.pyc

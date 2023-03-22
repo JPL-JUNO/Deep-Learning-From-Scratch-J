@@ -84,6 +84,18 @@ decay）的方法，即随着学习的进行，使学习率逐渐减小。实际
     标准的设定值是$\beta_1$为0.9，$\beta_2$ 为0.999。设置了这些值后，大多数情
     况下都能顺利运行。
 \end{tcolorbox}
+\subsection{使用哪种更新方法呢}
+\figures{Comparison of Optimization Methods}
+
+如\autoref{Comparison of Optimization Methods}所示，根据使用的方法不同，参数更新的路径也不同。只看这
+个图的话，AdaGrad似乎是最好的，不过也要注意，结果会根据要解决的问
+题而变。并且，很显然，超参数（学习率等）的设定值不同，结果也会发生变化。
+
+非常遗憾，（目前）并不存在能在所有问题中都表现良好
+的方法。这4种方法各有各的特点，都有各自擅长解决的问题和不擅长解决
+的问题。
+
+\subsection{基于MNIST数据集的更新方法的比较}
 \section{权重的初始值}
 \section{Batch Normalization}
 \section{正则化}
