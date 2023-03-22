@@ -92,9 +92,13 @@ $a = c^3$）这一次乘法运算（即没有隐藏层的神经网络）来表�
 \verb|np.dot()|接收两个NumPy数组作为参数，并返回数组的乘积。
 
 \section{3层神经网络的实现}
-图3-17中增加了表示偏置的神经元“1”。请注意，偏置的右下角的索引
+\figures{Signal passing from input layer to layer 1}
+\autoref{Signal passing from input layer to layer 1}中增加了表示偏置的神经元“1”。请注意，偏置的右下角的索引
 号只有一个。这是因为前一层的偏置神经元（神经元“1”）只有一个\footnote{任何前一层的偏置神经元“1”都只有一个。偏置权重的数量取决于后一层的神经元的数量（不包括
     后一层的偏置神经元“1”）。偏置是在后一层的神经元上增加，每个样本增加的偏置是相同，但是分量不一样。}。
+
+\figures{Layer 1 to Layer 2 Signaling}
+\figures{Signal passing from layer 2 to output layer}
 \section{输出层的设计}
 神经网络可以用在分类问题和回归问题上，不过需要根据情况改变输出
 层的激活函数。一般而言，回归问题用恒等函数，分类问题用softmax函数。
