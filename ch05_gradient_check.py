@@ -13,3 +13,7 @@ t_batch = t_train[:3]
 
 grad_numerical = network.numerical_gradient(x_batch, t_batch)
 grad_backprop = network.gradient(x_batch, t_batch)
+
+for key in grad_numerical.keys():
+    diff = np.average(np.abs(grad_numerical[key] - grad_backprop[key]))
+    print(key + ': ' + str(diff))

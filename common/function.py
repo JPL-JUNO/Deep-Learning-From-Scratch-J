@@ -27,7 +27,7 @@ def relu(x):
     return np.maximum(0, x)
 
 
-def cross_entropy_error(y: ndarray, t: ndarray):
+def cross_entropy_error(y: ndarray, t: ndarray) -> float:
     if y.ndim == 1:
         t = t.reshape(1, t.size)
         y = y.reshape(1, y.size)

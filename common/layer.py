@@ -1,6 +1,7 @@
 import numpy as np
 from numpy import ndarray
 from common.function import softmax
+from common.function import sigmoid
 from common.function import cross_entropy_error
 
 
@@ -9,7 +10,7 @@ class Relu:
         self.mask = None
 
     def forward(self, x):
-        self.mask = x <= 0
+        self.mask = (x <= 0)
         out = x.copy()
         out[self.mask] = 0
         return out
@@ -25,7 +26,7 @@ class Sigmoid:
         self.out = None
 
     def forward(self, x):
-        out = 1 / (1 + np.exp(-x))
+        out = sigmoid(x)
         self.out = out
         return out
 
@@ -44,18 +45,22 @@ class Affine:
         self.W = W
         self.b = b
         self.x = None
+        self.original_x_shape = None
         self.dW = None
         self.db = None
 
     def forward(self, x: ndarray) -> ndarray:
+        self.original_x_shape = x.shape
+        x = x.reshape(x.shape[0], -1)
         self.x = x
-        out = np.dot(x, self.W)
+        out = np.dot(self.x, self.W) + self.b
         return out
 
     def backward(self, dout):
         dx = np.dot(dout, self.W.T)
         self.dW = np.dot(self.x.T, dout)
         self.db = np.sum(dout, axis=0)
+        dx = dx.reshape(*self.original_x_shape)
         return dx
 
 
