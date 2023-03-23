@@ -78,7 +78,13 @@ class SoftmaxWithLoss:
 
     def backward(self, dout) -> ndarray:
         batch_size = self.t.shape[0]
+        # # 因为在计算交叉熵时，自带了一个系数，因此反向传播\frac{\partial L}{\partial y}=\frac{1}{batch_size}一开始就不是1，而是1/batch_size
+        # dx = (self.y - self.t) / batch_size
 
-        # 因为在计算交叉熵时，自带了一个系数，因此反向传播\frac{\partial L}{\partial y}=\frac{1}{batch_size}一开始就不是1，而是1/batch_size
-        dx = (self.y - self.t) / batch_size
+        if self.t.size == self.y.size:
+            dx = (self.y - self.t) / batch_size
+        else:
+            dx = self.y.copy()
+            dx[np.arange(batch_size), self.t] -= 1
+            dx = dx / batch_size
         return dx

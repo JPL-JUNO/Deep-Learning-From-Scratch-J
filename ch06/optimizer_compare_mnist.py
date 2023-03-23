@@ -48,3 +48,15 @@ for i in range(max_iterations):
         for key in optimizers.keys():
             loss = networks[key].loss(x_batch, t_batch)
             print(key + ':' + str(loss))
+
+
+markers = {'SGD': 'o', 'Momentum': 'x', 'AdaGrad': 's', 'Adam': 'D'}
+x = np.arange(max_iterations)
+for key in optimizers.keys():
+    plt.plot(x, smooth_curve(
+        train_loss[key]), marker=markers[key], markevery=100, label=key)
+plt.xlabel('iterations')
+plt.ylabel('loss')
+plt.ylim(0, 1)
+plt.legend()
+plt.show()
