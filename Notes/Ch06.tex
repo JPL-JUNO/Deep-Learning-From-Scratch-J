@@ -208,5 +208,59 @@ Batch Norm层会对正规化后的数据进行缩放和平移的变换，用
 轻松地推导出来。Frederik Kratzert 的博客“\href{https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html}{Understanding the backward pass through Batch Normalization Layer}”里有详细说明。
 
 \subsection{Batch Normalization的评估}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Figures/Use batch norm to compare with no use.png}
+    \caption{Use batch norm to compare with no use}
+    \label{Use batch norm to compare with no use}
+\end{figure}
+
+我们发现，几乎所有的情况下都是使用Batch Norm时学习进行得更快。
+同时也可以发现，实际上，在不使用Batch Norm的情况下，如果不赋予一
+个尺度好的初始值，学习将完全无法进行。
+
+通过使用Batch Norm，可以推动学习的进行。并且，对权重初
+始值变得健壮（“对初始值健壮”表示不那么依赖初始值）。
 \section{正则化}
+机器学习的问题中，过拟合是一个很常见的问题。过拟合指的是只能拟
+合训练数据，但不能很好地拟合不包含在训练数据中的其他数据的状态。机
+器学习的目标是提高泛化能力，即便是没有包含在训练数据里的未观测数据，
+也希望模型可以进行正确的识别。我们可以制作复杂的、表现力强的模型，但是相应地，抑制过拟合的技巧也很重要。
+\subsection{过拟合}
+发生过拟合的原因，主要有以下两个：
+\begin{enumerate}
+    \item 模型拥有大量参数、表现力强。
+    \item 训练数据少。
+\end{enumerate}
+\figures{Comparison of recognition accuracy between training data and test data}
+\autoref{Comparison of recognition accuracy between training data and test data} 中，使用的数据量仅为300，神经网络的层数为7，这是故意满足过拟合条件的情况。
+\subsection{权值衰减}
+权值衰减是一直以来经常被使用的一种抑制过拟合的方法。该方法通过
+在学习的过程中对大的权重进行惩罚，来抑制过拟合。很多过拟合原本就是
+因为权重参数取值过大才发生的。
+\begin{tcolorbox}
+    $L_2$范数相当于各个元素的平方和。用数学式表示的话，假设有权重
+    $W = (w_1, w_2, \cdots , w_n)$，则 $L_2$ 范数可用
+    计算$\sqrt{w_1^2+w_2^2+\cdots+w_n^2}$出来。除了$L_2$范数，还有$L_1$范数、$L\infty$范数等。$L_1$范数是各个元
+    素的绝对值之和，相当于$|w1| + |w2| + . . . + |wn|$。$L_{\infty}$范数也称为
+    Max范数，相当于各个元素的绝对值中最大的那一个。$L_2$范数、$L_1$
+    范数、$L_{\infty}$范数都可以用作正则化项，它们各有各的特点，不过这里
+    我们要实现的是比较常用的$L_2$范数。
+\end{tcolorbox}
+\figures{Changes in recognition accuracy of training data and test data using weight decay}
+
+\autoref{Changes in recognition accuracy of training data and test data using weight decay} 使用了权值衰退，这减少了过拟合现象，但是代价是降低了训练集的准确率，但是测试集的准确率没有任何的提升，也就是说这里的防止过拟合只是抑制训练集精度，模型似乎还是不是一个好的模型。
+\subsection{Dropout}
+作为抑制过拟合的方法，为损失函数加上权重的$L_2$范
+数的权值衰减方法。该方法可以简单地实现，在某种程度上能够抑制过拟合。
+但是，如果网络的模型变得很复杂，只用权值衰减就难以应对了。在这种情
+况下，我们经常会使用\textbf{Dropout}方法。
+
+Dropout是一种在学习的过程中随机删除神经元的方法。训练时，随机
+选出隐藏层的神经元，然后将其删除。被删除的神经元不再进行信号的传递，
+如 \autoref{Concept map of Dropout} 所示。训练时，每传递一次数据，就会随机选择要删除的神经元。
+然后，测试时，虽然会传递所有的神经元信号，但是对于各个神经元的输出，
+要乘上训练时的删除比例后再输出。
+
+\figures{Concept map of Dropout}
 \section{超参数的验证}
