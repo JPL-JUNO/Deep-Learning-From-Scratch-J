@@ -352,7 +352,19 @@ Dropout，即便是表现力强的网络，也可以抑制过拟合。
     参 考 论 文“\href{https://arxiv.org/abs/1206.2944}{Practical Bayesian Optimization of Machine Learning Algorithms}”等。
 \end{tcolorbox}
 \subsection{超参数最优化的实现}
+\figures{best 20 workouts}
 
+\autoref{best 20 workouts} 展示最好的二十次训练，观察可以使学习顺利进行的超参
+数的范围，从而缩小值的范围。然后，在这个缩小的范围中重复相同的操作。
 
-
-
+\section{小结}
+\begin{itemize}
+    \item 参 数 的 更 新 方 法，除 了 SGD 之 外，还 有 Momentum、AdaGrad、
+          Adam等方法。
+    \item 权重初始值的赋值方法对进行正确的学习非常重要。
+    \item 作为权重初始值，Xavier初始值、He初始值等比较有效。
+    \item 通过使用Batch Normalization，可以加速学习，并且对初始值变得
+          健壮。
+    \item 抑制过拟合的正则化技术有权值衰减、Dropout等。
+    \item 逐渐缩小“好值”存在的范围是搜索超参数的一个有效方法。
+\end{itemize}

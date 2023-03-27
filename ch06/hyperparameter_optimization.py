@@ -52,8 +52,14 @@ for _ in range(optimization_trail):
     results_val[key] = val_acc_list
     results_train[key] = train_acc_list
 
-fig, axes = plt.subplots(2, 8, figsize=(32, 8))
 sorted_results_val: List[Tuple[str, list]] = sorted(
     results_val.items(), key=lambda x: x[1][-1], reverse=True)
-# for key, ax in zip(sorted_results_val, axes.ravel()):
-#     ax.plot(np.arange(len(sorted_results_val)), )
+fig, axes = plt.subplots(2, 8, figsize=(32, 8))
+for idx, ((key, val_acc_list), ax) in enumerate(zip(sorted_results_val, axes.ravel())):
+    if idx % 8:
+        ax.set_yticks([])
+    ax.set_title('Best-' + str(idx + 1))
+    ax.plot(np.arange(len(val_acc_list)), val_acc_list)
+    ax.plot(np.arange(len(val_acc_list)), results_train[key], '--')
+
+plt.show()
