@@ -1,5 +1,5 @@
 {
   "python.analysis.typeCheckingMode": "off",
-  "cSpell.words": ["dall", "dorange"],
+  "cSpell.words": ["adagrad", "dall", "dorange"],
   "git.ignoreLimitWarning": true
 }

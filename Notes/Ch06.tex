@@ -263,4 +263,96 @@ Dropout是一种在学习的过程中随机删除神经元的方法。训练时�
 要乘上训练时的删除比例后再输出。
 
 \figures{Concept map of Dropout}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Figures/without dropout.png}
+        \caption{$dropout = 0$}
+        \label{dropout0}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{Figures/use dropout.png}
+        \caption{$dropout = 0.15$}
+        \label{dropout015}
+    \end{subfigure}
+    \caption{Comparison between dropout use or not}
+    \label{Comparison between dropout use or not}
+\end{figure}
+\autoref{Comparison between dropout use or not} 中，通过使用Dropout，训练数据和测试数据的识别精度的差距
+变小了。并且，训练数据也没有到达100\%的识别精度。像这样，通过使用
+Dropout，即便是表现力强的网络，也可以抑制过拟合。
+\begin{tcolorbox}
+    集成学习与Dropout有密切的关系。这是因为可以将Dropout
+    理解为，通过在学习过程中随机删除神经元，从而每一次都让不同
+    的模型进行学习。并且，推理时，通过对神经元的输出乘以删除比
+    例（比如，0.5等），可以取得模型的平均值。也就是说，可以理解成，
+    Dropout将集成学习的效果（模拟地）通过一个网络实现了。
+\end{tcolorbox}
+
+\paragraph{一点补充} 为了对齐Dropout训练和预测的结果，通常有两种做法，假设dropout rate = 0.2。一种是训练时不做处理，预测时输出乘以(1 - dropout rate)。另一种是训练时留下的神经元除以(1 - dropout rate)，预测时不做处理。（\href{https://www.cnblogs.com/jiangxinyang/p/14333903.html}{参考地址}）
 \section{超参数的验证}
+神经网络中，除了权重和偏置等参数，超参数（hyper-parameter）也经
+常出现。这里所说的超参数是指，比如各层的神经元数量、batch大小、参
+数更新时的学习率或权值衰减等。如果这些超参数没有设置合适的值，模型
+的性能就会很差。虽然超参数的取值非常重要，但是在决定超参数的过程中
+一般会伴随很多的试错。
+\subsection{验证数据}
+这里要注意的是，
+不能使用测试数据评估超参数的性能。这一点非常重要，但也容易被忽视。
+
+为什么不能用测试数据评估超参数的性能呢？这是因为如果使用测试数
+据调整超参数，超参数的值会对测试数据发生过拟合。换句话说，用测试数
+据确认超参数的值的“好坏”，就会导致超参数的值被调整为只拟合测试数据。
+这样的话，可能就会得到不能拟合其他数据、泛化能力低的模型。
+
+因此，调整超参数时，必须使用超参数专用的确认数据。用于调整超参
+数的数据，一般称为\textbf{验证数据}（validation data）。我们使用这个验证数据来评估超参数的好坏。
+\begin{tcolorbox}
+    训练数据用于参数（权重和偏置）的学习，验证数据用于超参数的性
+    能评估。为了确认泛化能力，要在最后使用（比较理想的是只用一次）
+    测试数据。
+\end{tcolorbox}
+\subsection{超参数的最优化}
+进行超参数的最优化时，逐渐缩小超参数的“好值”的存在范围非常重要。
+所谓逐渐缩小范围，是指一开始先大致设定一个范围，从这个范围中随机选
+出一个超参数（采样），用这个采样到的值进行识别精度的评估；然后，多次
+重复该操作，观察识别精度的结果，根据这个结果缩小超参数的“好值”的范围。
+通过重复这一操作，就可以逐渐确定超参数的合适范围。
+\begin{tcolorbox}
+    有\href{https://www.jmlr.org/papers/volume13/bergstra12a/bergstra12a.pdf}{报告}显示，在进行神经网络的超参数的最优化时，与网格搜索
+    等有规律的搜索相比，随机采样的搜索方式效果更好。这是因为在
+    多个超参数中，各个超参数对最终的识别精度的影响程度不同。
+\end{tcolorbox}
+
+所谓“大致地指定”，是指
+像 0.001（$10^{-3}$）到 1000（$10^3$）这样，以“10 的阶乘”的尺度指定范围（也表述为“用对数尺度（log scale）指定”）。
+
+在超参数的最优化中，要注意的是深度学习需要很长时间（比如，几天
+或几周）。因此，在超参数的搜索中，需要尽早放弃那些不符合逻辑的超参数。
+于是，在超参数的最优化中，减少学习的epoch，缩短一次评估所需的时间
+是一个不错的办法。
+\begin{itemize}
+    \item 步骤0：设定超参数的范围。
+    \item 步骤1：从设定的超参数范围中随机采样。
+    \item 步骤2：使用步骤1中采样到的超参数的值进行学习，通过验证数据评估识别精
+          度（但是要将epoch设置得很小）。
+    \item 步骤3：重复步骤1和步骤2（100次等），根据它们的识别精度的结果，缩小超参数的范围。
+\end{itemize}
+
+\begin{tcolorbox}
+    这里介绍的超参数的最优化方法是实践性的方法。不过，这个方
+    法与其说是科学方法，倒不如说有些实践者的经验的感觉。在超
+    参数的最优化中，如果需要更精炼的方法，可以使用贝叶斯最优
+    化（Bayesian optimization）。贝叶斯最优化运用以贝叶斯定理为中
+    心的数学理论，能够更加严密、高效地进行最优化。详细内容请
+    参 考 论 文“\href{https://arxiv.org/abs/1206.2944}{Practical Bayesian Optimization of Machine Learning Algorithms}”等。
+\end{tcolorbox}
+\subsection{超参数最优化的实现}
+
+
+
+
