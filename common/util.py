@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import ndarray
 
 
 def smooth_curve(x):
@@ -26,3 +27,31 @@ def shuffle_dataset(x, t):
     t = t[permutation]
 
     return x, t
+
+
+def im2col(input_data: ndarray, filter_h: int, filter_w: int, stride: int = 1, pad: int = 0) -> ndarray:
+    """将图像数据转为列数据（四维转二维）
+
+    Args:
+        input_data (ndarray): 由(num, channel, height, width)的四维数组构成的输入数据
+        filter_h (int): 过滤器高
+        filter_w (int): 过滤器长
+        stride (int, optional): 步幅. Defaults to 1.
+        pad (int, optional): 填充. Defaults to 0.
+    """
+    N, C, H, W = input_data.shape
+
+    out_h = (H + 2 * pad - filter_h) // stride + 1
+    out_w = (W + 2 * pad - filter_w) // stride + 1
+    # 对原始的数据进行填充，在每个数据的每个通道上，高和宽填充 pad 个0
+    img = np.pad(input_data, [(0, 0), (0, 0),
+                 (pad, pad), (pad, pad)], 'constant')
+    col = np.zeros((N, C, filter_h, filter_w, out_h, out_w))
+
+    for y in range(filter_h):
+        y_max = y + stride * out_h
+        for x in range(filter_w):
+            x_max = x + stride * out_w
+            col[:, :, y, x, :, :] = img[:, :, y:y_max:stride, x:x_max:stride]
+    col = col.transpose(0, 4, 5, 1, 2, 3).reshape(N * out_h * out_w, -1)
+    return col
