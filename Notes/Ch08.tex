@@ -1,1 +1,46 @@
 \chapter{深度学习}
+深度学习是加深了层的深度神经网络。基于之前介绍的网络，只需通过
+叠加层，就可以创建深度网络。
+\section{加深网络}
+
+\subsection{向更深的网络出发}
+
+这里我们来创建一个如 \autoref{Deep CNN for Handwritten Digit Recognition} 所示的网络结构的CNN。
+
+\figures{Deep CNN for Handwritten Digit Recognition}
+
+\subsection{进一步提高识别精度}
+在一个标题为“\href{https://rodrigob.github.io/are_we_there_yet/build/classification_datasets_results.html}{What is the class of this image ?}”的网站
+上，以排行
+榜的形式刊登了目前为止通过论文等渠道发表的针对各种数据集的方法的识
+别精度。
+\figures{Examples of misidentified images}
+排行榜中前几名的方法，可以发现进一步提高识别精度的技术和
+线索。比如，集成学习、学习率衰减、\textbf{Data Augmentation}（数据扩充）等都有
+助于提高识别精度。尤其是Data Augmentation，虽然方法很简单，但在提高
+识别精度上效果显著。
+
+Data Augmentation基于算法“人为地”扩充输入图像（训练图像）。具
+体地说，如 \autoref{Data Augmentation example} 所示，对于输入图像，通过施加旋转、垂直或水平方向上
+的移动等微小变化，增加图像的数量。这在数据集的图像数量有限时尤其有效。
+
+除了如 \autoref{Data Augmentation example} 所示的变形之外，Data Augmentation还可以通过其他各
+种方法扩充图像，比如裁剪图像的 “crop处理”、将图像左右翻转的“fl ip处
+理”\footnote{flip处理只在不需要考虑图像对称性的情况下有效。}等。对于一般的图像，施加亮度等外观上的变化、放大缩小等尺度上
+的变化也是有效的。不管怎样，通过Data Augmentation巧妙地增加训练图像，
+就可以提高深度学习的识别精度。虽然这个看上去只是一个简单的技巧，不
+过经常会有很好的效果。
+
+\figures{Data Augmentation example}
+
+\subsection{加深层的动机}
+关于加深层的重要性，现状是理论研究还不够透彻。尽管目前相关理论
+还比较贫乏，但是有几点可以从过往的研究和实验中得以解释。
+
+首先，从以ILSVRC为代表的大规模图像识别的比赛结果中可以看出加
+深层的重要性（详细内容请参考下一节）。这种比赛的结果显示，最近前几名
+的方法多是基于深度学习的，并且有逐渐加深网络的层的趋势。也就是说，
+可以看到层越深，识别性能也越高。
+下面我们说一下加深层的好处。其中一个好处就是可以减少网络的参数
+数量。说得详细一点，就是与没有加深层的网络相比，加深了层的网络可以
+用更少的参数达到同等水平（或者更强）的表现力。
