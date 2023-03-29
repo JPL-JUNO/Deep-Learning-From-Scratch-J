@@ -282,3 +282,57 @@ im2col会把输入数据展开以适合滤波器（权重）。具体地说，�
 \figures{Details of filter processing for convolution operations}
 
 \subsection{卷积层的实现}
+
+im2col会将一个过滤器按照长、高、通道的顺序展开，然后进行步幅移动。
+
+\subsection{池化层的实现}
+
+池化层的实现和卷积层相同，都使用 im2col展开输入数据。不过，池化
+的情况下，在通道方向上是独立的，这一点和卷积层不同。具体地讲，如 \autoref{The implementation process of the pooling layer} 所示，池化的应用区域按通道单独展开。
+
+\figures{The implementation process of the pooling layer}
+
+像这样展开之后，只需对展开的矩阵求各行的最大值，并转换为合适的
+形状即可。
+
+\section{CNN的实现}
+
+如 \autoref{Network composition of a simple CNN} 所示，网络的构成是“Convolution - ReLU - Pooling -Affine -
+ReLU - Affine - Softmax”，我们将它实现为名为 SimpleConvNet的类。
+
+\figures{Network composition of a simple CNN}
+
+\figures{CNN training results on MNIST}
+
+\section{CNN的可视化}
+\subsection{第1层权重的可视化}
+\subsection{基于分层结构的信息提取}
+
+\section{具有代表性的CNN}
+关于CNN，迄今为止已经提出了各种网络结构。这里，我们介绍其中
+特别重要的两个网络，一个是在1998年首次被提出的CNN元祖LeNet，
+另一个是在深度学习受到关注的2012年被提出的AlexNet。
+\subsection{LeNet}
+\figures{The network structure of LeNet}
+
+和“现在的CNN”相比，LeNet有几个不同点。第一个不同点在于激活
+函数。LeNet 中使用sigmoid 函数，而现在的 CNN中主要使用 ReLU 函数。
+此外，原始的LeNet中使用子采样（subsampling）缩小中间数据的大小，而
+现在的CNN中Max池化是主流。
+
+\subsection{AlexNet}
+\figures{AlexNet}
+
+虽然结构上AlexNet和LeNet没有大的不同，但有以下几点差异。
+
+\begin{itemize}
+    \item 激活函数使用ReLU。
+    \item 使用进行局部正规化的LRN（Local Response Normalization）层。
+    \item 使用Dropout。
+\end{itemize}
+
+\section{小结}
+\begin{itemize}
+    \item CNN在此前的全连接层的网络中新增了卷积层和池化层。
+    \item 使用 im2col函数可以简单、高效地实现卷积层和池化层。
+\end{itemize}
