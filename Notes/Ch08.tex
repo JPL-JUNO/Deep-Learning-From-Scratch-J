@@ -44,3 +44,122 @@ Data Augmentation基于算法“人为地”扩充输入图像（训练图像）
 下面我们说一下加深层的好处。其中一个好处就是可以减少网络的参数
 数量。说得详细一点，就是与没有加深层的网络相比，加深了层的网络可以
 用更少的参数达到同等水平（或者更强）的表现力。
+
+\figures{5-5 convolution example}
+
+显然，在 \autoref{5-5 convolution example} 的例子中，每个输出节点都是从输入数据的某个
+$5\times 5$的区域算出来的。接下来我们思考一下 \autoref{Example of a convolutional layer repeated twice 3-3} 中重复两次$5\times 5$的卷积
+运算的情形。此时，每个输出节点将由中间数据的某个$3\times 3$的区域计算出来。
+
+\figures{Example of a convolutional layer repeated twice 3-3}
+
+一次$5\times 5$的卷积运算的区域可以由两次$3\times 3$的卷积运算抵充。并且，
+相对于前者的参数数量25（$5\times 5$），后者一共是18（ $2\times3\times 3$），通过叠加卷
+积层，参数数量减少了。而且，这个参数数量之差会随着层的加深而变大。
+比如，重复三次$3\times 3$的卷积运算时，参数的数量总共是27。而为了用一次
+卷积运算“观察”与之相同的区域，需要一个$7 \times 7$的滤波器，此时的参数数
+量是49。
+
+\begin{tcolorbox}
+    叠加小型滤波器来加深网络的好处是可以减少参数的数量，扩大\uuline{感受野}（receptive field，给神经元施加变化的某个局部空间区域）。并且，
+    通过叠加层，将ReLU等激活函数夹在卷积层的中间，进一步提高
+    了网络的表现力。这是因为向网络添加了基于激活函数的“非线性”
+    表现力，通过非线性函数的叠加，可以表现更加复杂的东西。
+\end{tcolorbox}
+
+加深层的另一个好处就是使学习更加高效。与没有加深层的网络相比，
+通过加深层，可以减少学习数据，从而高效地进行学习。
+
+\section{深度学习的小历史}
+\subsection{VGG}
+VGG 是由卷积层和池化层构成的基础的 CNN。不过，如图 8-9所示，
+它的特点在于将有权重的层（卷积层或者全连接层）叠加至16层（或者19层），
+具备了深度（根据层的深度，有时也称为“VGG16”或“VGG19”）。
+
+VGG中需要注意的地方是，基于 $3\times 3$ 的小型滤波器的卷积层的运算是
+连续进行的。如 \autoref{VGG} 所示，重复进行“卷积层重叠2次到4次，再通过池化
+层将大小减半”的处理，最后经由全连接层输出结果。
+
+\figures{VGG}
+
+\subsection{GoogLeNet}
+只看 \autoref{GoogLeNet} 的话，这似乎是一个看上去非常复杂的网络结构，但实际上它基
+本上和之前介绍的CNN结构相同。不过，GoogLeNet的特征是，网络不仅
+在纵向上有深度，在横向上也有深度（广度）。
+
+GoogLeNet在横向上有“宽度”，这称为“Inception结构”。
+
+\figures{GoogLeNet}
+
+\autoref{Inception structure of GoogLeNet}，Inception结构使用了多个大小不同的滤波器（和池化），
+最后再合并它们的结果。GoogLeNet的特征就是将这个Inception结构用作
+一个构件（构成元素）。此外，在GoogLeNet中，很多地方都使用了大小为 $1 \times 1$ 的滤波器的卷积层。这个1 × 1的卷积运算通过在通道方向上减小大小，
+有助于减少参数和实现高速化处理。
+
+\figures{Inception structure of GoogLeNet}
+
+\subsection{ResNet}
+ResNet是微软团队开发的网络。它的特征在于具有比以前的网络更
+深的结构。
+
+我们已经知道加深层对于提升性能很重要。但是，在深度学习中，过度
+加深层的话，很多情况下学习将不能顺利进行，导致最终性能不佳。ResNet中，
+为了解决这类问题，导入了“快捷结构”
+（也称为“捷径”或“小路”）。导入这
+个快捷结构后，就可以随着层的加深而不断提高性能了（当然，层的加深也
+是有限度的）。
+
+如 \autoref{Components of ResNet} 所示，快捷结构横跨（跳过）了输入数据的卷积层，将输入 x合
+计到输出。
+\autoref{Components of ResNet} 中，在连续2层的卷积层中，将输入$x$跳着连接至2层后的输出。
+这里的重点是，通过快捷结构，原来的2层卷积层的输出$\mathcal{F}(x)$变成了$\mathcal{F}(x) + x$。
+通过引入这种快捷结构，即使加深层，也能高效地学习。这是因为，通过快
+捷结构，反向传播时信号可以无衰减地传递。
+
+\figures{Components of ResNet}
+
+\begin{tcolorbox}
+    因为快捷结构只是原封不动地传递输入数据，所以反向传播时会将
+    来自上游的梯度原封不动地传向下游。这里的重点是不对来自上游
+    的梯度进行任何处理，将其原封不动地传向下游。因此，基于快捷
+    结构，不用担心梯度会变小（或变大），能够向前一层传递“有意义
+    的梯度”。通过这个快捷结构，之前因为加深层而导致的梯度变小的
+    梯度消失问题就有望得到缓解。
+\end{tcolorbox}
+
+\begin{tcolorbox}
+    实践中经常会灵活应用使用ImageNet这个巨大的数据集学习到的权
+    重数据，这称为\textbf{迁移学习}，将学习完的权重（的一部分）复制到其他
+    神经网络，进行再学习（fine tuning）。比如，准备一个和VGG相同
+    结构的网络，把学习完的权重作为初始值，以新数据集为对象，进
+    行再学习。迁移学习在手头数据集较少时非常有效。
+\end{tcolorbox}
+
+\section{深度学习的高速化}
+\subsection{需要努力解决的问题}
+\subsection{基于GPU的高速化}
+GPU计算，是指基于GPU进行通用的数值计算的操作。
+
+深度学习中需要进行大量的乘积累加运算（或者大型矩阵的乘积运算）。
+这种大量的并行运算正是GPU所擅长的（反过来说，CPU比较擅长连续的、
+复杂的计算）。
+\subsection{分布式学习}
+\subsection{运算精度的位数缩减}
+\section{深度学习的应用案例}
+\subsection{物体检测}
+物体检测是从图像中确定物体的位置，并进行分类的问题。
+
+对于这样的物体检测问题，人们提出了多个基于CNN的方法。这些方
+法展示了非常优异的性能，并且证明了在物体检测的问题上，深度学习是非
+常有效的。
+
+在使用CNN进行物体检测的方法中，有一个叫作R-CNN的有名的方
+法。\autoref{Processing flow of R-CNN} 显示了R-CNN的处理流。
+\figures{Processing flow of R-CNN}
+\subsection{图像分割}
+\subsection{图像标题生成}
+\section{深度学习的未来}
+\subsection{图像风格变换}
+\subsection{图像的生成}
+\subsection{自动驾驶}
+\subsection{Deep Q-Network(强化学习)}
